@@ -4,12 +4,14 @@ let plants = [
         name: 'Kaktus w pokoju',
         species: 'Aporocactus Mallisonii',
         watering: 'dwa razy w tygodniu',
+        image: require('../assets/flop.jpg'),
     },
     {
         id: 1,
         name: 'Mięta w kuchni',
         species: 'Mięta pieprzowa',
         watering: 'raz dziennie',
+        image: require('../assets/flop.jpg'),
     },
 ]
 
@@ -55,4 +57,4 @@ const modifyPlant = (newPlant) => {
 
 databaseAPI = { getPlants, getPlant, addPlant, removePlant, modifyPlant }
 
-export default databaseAPI
+export default databaseAPI 
