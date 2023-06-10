@@ -6,25 +6,53 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
     },
+    col: {
+        flexDirection: 'column',
+    },
     title: {
         fontSize: 30,
         fontWeight: 600,
-        color: Colors.textBrand
+        color: Colors.primary,
+        marginHorizontal: 6,
+        marginVertical: 14,
     },
     em: {
         fontSize: 20,
         fontWeight: 500,
         color: Colors.textPrimary,
     },
-    primaryButton: {
-        backgroundColor: Colors.secondary,
+    button: {
         paddingHorizontal: 20,
         paddingVertical: 8,
         margin: 6,
         borderRadius: 4,
+        textAlign: 'center',
+    },
+    buttonText:{
+        textAlign: 'center',
+    },
+    primaryButton: {
+        backgroundColor: Colors.primary,
     },
     primaryButtonText: {
         color: Colors.textAlt,
+    },
+    secondaryButton:{
+        backgroundColor: Colors.secondary,
+    },
+    secondaryButtonText: {
+        color: Colors.textAlt,
+    },
+    input: {
+        borderBottomWidth: 1,
+        height: 46,
+    },
+    label: {
+        fontWeight: 500,
+        color: Colors.darkGrey,
+    },
+    property: {
+        fontWeight: 600,
     },
 });
 

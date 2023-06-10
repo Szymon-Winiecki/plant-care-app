@@ -1,65 +1,46 @@
-// import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, StatusBar, TextInput, Pressable } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import PlantListElement from './components/PlantListElement';
+import HomePage from './pages/HomePage';
+import IndexPage from './pages/IndexPage';
+import AlterPage from './pages/AlterPage';
+import DetailsPage from './pages/DetailsPage';
 
-import { commonStyles } from './styles/common';
+const Stack = createNativeStackNavigator();
 
-export default function App() {
-  const [newPlantName, setNewPlantName] = useState('');
-  const [plants, setPlants] = useState([]);
-
-  const addPlant = () => {
-    setPlants(old => [...old, newPlantName]);
-    setNewPlantName('');
-  }
-
-  const renderPlantsList = () => {
-    const rendered = []
-
-    plants.forEach(plant => {
-      rendered.push(
-        <PlantListElement name={plant}/>
-      )
-    });
-
-    return rendered
-  }
+const App = () => {
 
   return (
-    <SafeAreaView  style={styles.container}>
-      <View>
-        <Text style={commonStyles.title} >TWOJE ROŚLINY</Text>
-      </View>
-      <View style={commonStyles.row}>
-        <TextInput 
-          placeholder='nazwa rośliny...'
-          onChangeText={newText => setNewPlantName(newText)}
-          value={newPlantName}
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomePage}
+          options={{title: 'Strona Główna'}}
         />
-        <Pressable 
-          style={commonStyles.primaryButton}
-          onPress={() => addPlant()}
-        >
-          <Text style={commonStyles.primaryButtonText}>dodaj</Text>
-        </Pressable>
-      </View>
-      <View style={styles.list}>
-        {renderPlantsList()}
-      </View>
-      <StatusBar style="auto" />
-    </SafeAreaView >
+        <Stack.Screen
+          name="Index"
+          component={IndexPage}
+          options={{title: 'Lista roślin'}}
+        />
+        <Stack.Screen
+          name="AddPlant"
+          component={AlterPage}
+          options={{title: 'Dodaj roślinę'}}
+        />
+        <Stack.Screen
+          name="EditPlant"
+          component={AlterPage}
+          options={{title: 'Edytuj roślinę'}}
+        />
+        <Stack.Screen
+          name="Details"
+          component={DetailsPage}
+          options={{title: 'Edytuj roślinę'}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: StatusBar.currentHeight || 0,
-  },
-  list: {
-    width: '70%',
-  }
-});
+export default App;

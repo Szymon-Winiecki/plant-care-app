@@ -1,13 +1,17 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { commonStyles } from '../styles/common';
 import { Colors } from '../constants/colors'
 
   const PlantListElement = props => {
   return (
-    <View style={styles.listElement}>
-        <Text>{props.name}</Text>
-    </View>
+    <Pressable
+      onPress={() => props.onClick()}
+    >
+      <View style={styles.listElement}>
+          <Text>{props.name}</Text>
+      </View>
+    </Pressable>
   );
 }
 
