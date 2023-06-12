@@ -9,6 +9,7 @@ import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
 
 import * as ImagePicker from 'expo-image-picker';
+import { defaultImageUri } from '../constants/plantTemplates';
 
 
 
@@ -22,14 +23,11 @@ const AlterPage = props => {
 
   // określa, czy wystąpił błąd podczas ładowania danych
   const [error, setError] = useState(false);
-  
-  // zrobić tu kiedyś żeby pobrało aktualne zdjęcie jeżeli było
-  const [imageUri, setImageUri] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
 
   const [plantName, setPlantName] = useState('')
   const [plantSpecies, setPlantSpecies] = useState('')
   const [plantDescription, setPlantDescription] = useState('')
+  const [plantImage, setPlantImage] = useState(defaultImageUri)
 
   const getPlant = async () => {
     plantsCRUD.getPlant(props.route.params.id).then(plant => {
@@ -41,6 +39,7 @@ const AlterPage = props => {
       setPlantName(plant.name);
       setPlantSpecies(plant.species);
       setPlantDescription(plant.description);
+      setPlantImage(plant.image);
       setLoading(false);
     }).catch(error => setError(true));
   }
@@ -59,7 +58,7 @@ const AlterPage = props => {
       name: plantName,
       species: plantSpecies,
       description: plantDescription,
-      image: require('../assets/flop.jpg'),
+      image: plantImage,
     }
 
     plantsCRUD.addPlant(plant).then(id => props.navigation.goBack()).catch(error => setError(true));
@@ -71,7 +70,7 @@ const AlterPage = props => {
       name: plantName,
       species: plantSpecies,
       description: plantDescription,
-      image: require('../assets/flop.jpg'),
+      image: plantImage,
     }
 
     plantsCRUD.modifyPlant(plant).then(id => props.navigation.goBack()).catch(error => setError(true));
@@ -97,8 +96,7 @@ const AlterPage = props => {
   
     const pickerResult = await ImagePicker.launchImageLibraryAsync();
     if (!pickerResult.canceled) {
-      setImageUri(pickerResult.assets[0].uri);
-      setSelectedImage(<Image source={{ uri: pickerResult.assets[0].uri }} style={styles.selectedImage} />);
+      setPlantImage(pickerResult.assets[0].uri);
     }
   };
   
@@ -113,8 +111,7 @@ const AlterPage = props => {
   
     const pickerResult = await ImagePicker.launchCameraAsync();
     if (!pickerResult.canceled) {
-      setImageUri(pickerResult.assets[0].uri);
-      setSelectedImage(<Image source={{ uri: pickerResult.assets[0].uri }} style={styles.selectedImage} />);
+      setPlantImage(pickerResult.assets[0].uri);
     }
   };
   
@@ -127,15 +124,11 @@ const AlterPage = props => {
       </View>
         <View style={[commonStyles.column, styles.fields]}>
           <View style={styles.imageContainer}>
-          {selectedImage && ( // powinno się wyświetlić aktualne zdj ale na razie nie będzie działać
-            <View style={styles.selectedImageContainer}>
-              {selectedImage}
-            </View>
-          )}
-          <Pressable
-            style={[commonStyles.button, commonStyles.secondaryButton]}
-            onPress={openImagePickerAsync}
-          >
+            <Image source={{ uri: plantImage }} style={styles.image} />
+            <Pressable
+              style={[commonStyles.button, commonStyles.secondaryButton]}
+              onPress={openImagePickerAsync}
+            >
             <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>
               Choose Image
             </Text>
@@ -148,7 +141,6 @@ const AlterPage = props => {
               Take Photo
             </Text>
           </Pressable>
-          {selectedImage}
         </View>
         <TextInput 
           style={commonStyles.input}
@@ -202,6 +194,10 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     flexDirection: 'row',
+  },
+  image: {
+    width: 200,
+    height: 200,
   },
 });
 

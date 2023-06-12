@@ -1,8 +1,10 @@
 import { openDatabase, enablePromise } from "expo-sqlite";
 import * as queries from "./queries";
+import { defaultImageUri, generatePlantImageFileName } from "../constants/plantTemplates";
+import { getFileExtension, generatePlantImageUri, savePlantImage } from "../filesystem/filesystem";
 
 // increment to update db structure and reset data 
-const db_version = 5;
+const db_version = 8;
 
 let db = undefined;
 
@@ -87,14 +89,14 @@ let plants = [
         name: 'Kaktus w pokoju',
         species: 'Aporocactus Mallisonii',
         description: 'podlewać dwa razy w tygodniu',
-        image: require('../assets/flop.jpg'),
+        image: defaultImageUri,
     },
     {
         id: 1,
         name: 'Mięta w kuchni',
         species: 'Mięta pieprzowa',
         description: 'podlewać raz dziennie',
-        image: require('../assets/flop.jpg'),
+        image: defaultImageUri,
     },
 ]
 
@@ -130,8 +132,14 @@ const getPlant = async (id) => {
 }
 
 const addPlant = async (plant) => {
+    
     try{
         const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description, plant.image]);
+        const imageUri = generatePlantImageUri(generatePlantImageFileName(result.insertId) + getFileExtension(plant.image));
+        await savePlantImage(plant.image, imageUri);
+        plant.image = imageUri;
+        plant.id = result.insertId;
+        await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.id]);
         return result.insertId;
     }
     catch (error){
@@ -154,6 +162,9 @@ const removePlant = async (id) => {
 
 const modifyPlant = async (plant) => {
     try{
+        const imageUri = generatePlantImageUri(generatePlantImageFileName(plant.id) + getFileExtension(plant.image));
+        await savePlantImage(plant.image, imageUri);
+        plant.image = imageUri;
         const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.id]);
         return result;
     }

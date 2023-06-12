@@ -55,7 +55,7 @@ const DetailsPage = props => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Image source={plant.image} style={styles.image}  />
+        <Image source={{uri:plant.image + '?' + new Date()}} style={styles.image}  />
       </View>
       <View>
         <Text style={commonStyles.title} > {plant.name} </Text>

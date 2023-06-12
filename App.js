@@ -2,12 +2,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { dbManagement } from './database/database';
+import { initFileSystem } from './filesystem/filesystem';
 
 import HomePage from './pages/HomePage';
 import IndexPage from './pages/IndexPage';
 import AlterPage from './pages/AlterPage';
 import DetailsPage from './pages/DetailsPage';
 import { useEffect } from 'react';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +18,7 @@ const App = () => {
 
   useEffect(() => {
     dbManagement.init();
+    initFileSystem();
   }, []);
 
   return (

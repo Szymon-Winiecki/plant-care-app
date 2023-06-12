@@ -22,7 +22,7 @@ const createPlantsTable = `create table if not exists plants(
     name varchar,
     species varchar,
     description text,
-    image integer
+    image varchar
 );`;
 
 const dropPlantsTable = `drop table if exists plants;`
