@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, StatusBar, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, StatusBar, Pressable, Image } from 'react-native';
 
 import { plantsCRUD } from '../database/database';
 
@@ -46,6 +46,7 @@ const IndexPage = props => {
 
     plants.forEach(plant => {
       const id = "plant_" + plant.id;
+
       rendered.push(
         <PlantListElement key={id} name={plant.name} onClick={() => openDetails(plant.id)}/>
       )
@@ -93,6 +94,16 @@ const styles = StyleSheet.create({
   },
   list: {
     width: '70%',
+  },
+  plantContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginRight: 10,
   }
 });
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View , SafeAreaView, StatusBar, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable, Image, TextInput } from 'react-native';
 
 import { plantsCRUD } from '../database/database';
 
@@ -7,6 +7,10 @@ import { commonStyles } from '../styles/common';
 
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
+
+import * as ImagePicker from 'expo-image-picker';
+
+
 
 const AlterPage = props => {
 
@@ -18,6 +22,10 @@ const AlterPage = props => {
 
   // określa, czy wystąpił błąd podczas ładowania danych
   const [error, setError] = useState(false);
+  
+  // zrobić tu kiedyś żeby pobrało aktualne zdjęcie jeżeli było
+  const [imageUri, setImageUri] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const [plantName, setPlantName] = useState('')
   const [plantSpecies, setPlantSpecies] = useState('')
@@ -50,7 +58,8 @@ const AlterPage = props => {
     const plant = {
       name: plantName,
       species: plantSpecies,
-      description: plantDescription
+      description: plantDescription,
+      image: require('../assets/flop.jpg'),
     }
 
     plantsCRUD.addPlant(plant).then(id => props.navigation.goBack()).catch(error => setError(true));
@@ -61,7 +70,8 @@ const AlterPage = props => {
       id: props.route.params.id,
       name: plantName,
       species: plantSpecies,
-      description: plantDescription
+      description: plantDescription,
+      image: require('../assets/flop.jpg'),
     }
 
     plantsCRUD.modifyPlant(plant).then(id => props.navigation.goBack()).catch(error => setError(true));
@@ -77,12 +87,69 @@ const AlterPage = props => {
     return ( <ErrorScreen error="Błąd ładowania danych" message="spróbuj ponownie później"/> );
   }
 
+  const openImagePickerAsync = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+    if (permissionResult.granted === false) {
+      alert('Permission to access the camera roll is required!');
+      return;
+    }
+  
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+    if (!pickerResult.canceled) {
+      setImageUri(pickerResult.assets[0].uri);
+      setSelectedImage(<Image source={{ uri: pickerResult.assets[0].uri }} style={styles.selectedImage} />);
+    }
+  };
+  
+  
+  const openCameraAsync = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+  
+    if (permissionResult.granted === false) {
+      alert('Permission to access the camera is required!');
+      return;
+    }
+  
+    const pickerResult = await ImagePicker.launchCameraAsync();
+    if (!pickerResult.canceled) {
+      setImageUri(pickerResult.assets[0].uri);
+      setSelectedImage(<Image source={{ uri: pickerResult.assets[0].uri }} style={styles.selectedImage} />);
+    }
+  };
+  
+  
+
   return (
     <SafeAreaView style={styles.container}>
     <View>
         <Text style={commonStyles.title} >{edit ? 'Edytuj' : 'Dodaj nową'} roślinę</Text>
       </View>
-      <View style={[commonStyles.column, styles.fields]}>
+        <View style={[commonStyles.column, styles.fields]}>
+          <View style={styles.imageContainer}>
+          {selectedImage && ( // powinno się wyświetlić aktualne zdj ale na razie nie będzie działać
+            <View style={styles.selectedImageContainer}>
+              {selectedImage}
+            </View>
+          )}
+          <Pressable
+            style={[commonStyles.button, commonStyles.secondaryButton]}
+            onPress={openImagePickerAsync}
+          >
+            <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>
+              Choose Image
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[commonStyles.button, commonStyles.secondaryButton]}
+            onPress={openCameraAsync}
+          >
+            <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>
+              Take Photo
+            </Text>
+          </Pressable>
+          {selectedImage}
+        </View>
         <TextInput 
           style={commonStyles.input}
           placeholder='nazwa rośliny...'
@@ -127,7 +194,16 @@ const styles = StyleSheet.create({
   },
   fields:{
     width: '70%',
-  }
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+  },
 });
+
 
 export default AlterPage;

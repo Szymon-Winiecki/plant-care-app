@@ -21,7 +21,8 @@ const createPlantsTable = `create table if not exists plants(
     id integer primary key,
     name varchar,
     species varchar,
-    description text
+    description text,
+    image integer
 );`;
 
 const dropPlantsTable = `drop table if exists plants;`
@@ -30,9 +31,9 @@ const selectPlants = `select * from plants;`;
 
 const selectPlant = `select * from plants where id=?;`;
 
-const insertPlant = `insert into plants(name, species, description) values(?, ?, ?);`;
+const insertPlant = `insert into plants(name, species, description, image) values(?, ?, ?, ?);`;
 
-const updatePlant = `update plants set name=?, species=?, description=? where id=?;`;
+const updatePlant = `update plants set name=?, species=?, description=?, image=? where id=?;`;
 
 const deletePlant = `delete from plants where id=?;`;
 

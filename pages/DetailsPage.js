@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , SafeAreaView , StatusBar, Pressable } from 'react-native';
+import { StyleSheet, Text, View , SafeAreaView , StatusBar, Pressable, Image } from 'react-native';
 
 import { plantsCRUD } from '../database/database';
 
@@ -55,6 +55,9 @@ const DetailsPage = props => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
+        <Image source={plant.image} style={styles.image}  />
+      </View>
+      <View>
         <Text style={commonStyles.title} > {plant.name} </Text>
       </View>
       <View style={styles.propertyContainer}>
@@ -87,6 +90,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     rowGap: 10,
     marginVertical: 20
+  },
+  image: {
+    width: 200,
+    height: 200,
   },
 });
 

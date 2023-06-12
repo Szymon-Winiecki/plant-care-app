@@ -2,7 +2,7 @@ import { openDatabase, enablePromise } from "expo-sqlite";
 import * as queries from "./queries";
 
 // increment to update db structure and reset data 
-const db_version = 4;
+const db_version = 5;
 
 let db = undefined;
 
@@ -87,20 +87,22 @@ let plants = [
         name: 'Kaktus w pokoju',
         species: 'Aporocactus Mallisonii',
         description: 'podlewać dwa razy w tygodniu',
+        image: require('../assets/flop.jpg'),
     },
     {
         id: 1,
         name: 'Mięta w kuchni',
         species: 'Mięta pieprzowa',
         description: 'podlewać raz dziennie',
-    }
+        image: require('../assets/flop.jpg'),
+    },
 ]
 
 const populateData = (callback) => {
     if(!connected()) connect();
     for(let i = 0; i <  plants.length; i++){
         db.transaction(tx => {
-            tx.executeSql(queries.insertPlant, [plants[i].name, plants[i].species, plants[i].description], (txObj, result) => {callback(result, null)}, (txObj, error) => {callback(null, error) });
+            tx.executeSql(queries.insertPlant, [plants[i].name, plants[i].species, plants[i].description, plants[i].image], (txObj, result) => {callback(result, null)}, (txObj, error) => {callback(null, error) });
         });
     }
 }
@@ -129,7 +131,7 @@ const getPlant = async (id) => {
 
 const addPlant = async (plant) => {
     try{
-        const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description]);
+        const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description, plant.image]);
         return result.insertId;
     }
     catch (error){
@@ -152,7 +154,7 @@ const removePlant = async (id) => {
 
 const modifyPlant = async (plant) => {
     try{
-        const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.id]);
+        const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.id]);
         return result;
     }
     catch (error){
