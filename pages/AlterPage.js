@@ -1,35 +1,80 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View , SafeAreaView, StatusBar, TextInput, Pressable } from 'react-native';
 
-import databaseAPI from '../database/database';
+import { plantsCRUD } from '../database/database';
 
 import { commonStyles } from '../styles/common';
 
+import ErrorScreen from '../components/ErrorScreen';
+import LoadingScreen from '../components/LoadingScreen';
+
 const AlterPage = props => {
 
+  // true, jeżeli edytujemy istniejącą roślinę, false jeżeli dodajemmy nową
   const edit = props.route.params.id != undefined;
-  let plant = edit ? databaseAPI.getPlant(props.route.params.id) : {};
 
-  const [plantName, setPlantName] = useState(edit ? plant.name : '')
-  const [plantSpecies, setPlantSpecies] = useState(edit ? plant.species : '')
-  const [plantWatering, setPlantWatering] = useState(edit ? plant.watering : '')
+  // określa, czy dane zostały już pobrane z bazy
+  const [loading, setLoading] = useState(true);
 
-  const addPlant = () => {
-    plant.name = plantName;
-    plant.species = plantSpecies;
-    plant.watering = plantWatering;
+  // określa, czy wystąpił błąd podczas ładowania danych
+  const [error, setError] = useState(false);
 
-    databaseAPI.addPlant(plant);
-    props.navigation.goBack()
+  const [plantName, setPlantName] = useState('')
+  const [plantSpecies, setPlantSpecies] = useState('')
+  const [plantDescription, setPlantDescription] = useState('')
+
+  const getPlant = async () => {
+    plantsCRUD.getPlant(props.route.params.id).then(plant => {
+      if(plant == null){
+        setError(true);
+        setLoading(false);
+        return;
+      }
+      setPlantName(plant.name);
+      setPlantSpecies(plant.species);
+      setPlantDescription(plant.description);
+      setLoading(false);
+    }).catch(error => setError(true));
   }
 
-  const editPlant = () => {
-    plant.name = plantName;
-    plant.species = plantSpecies;
-    plant.watering = plantWatering;
+  useEffect(() => {
+    if(edit){
+      getPlant();
+    }
+    else{
+      setLoading(false);
+    }
+  }, []);
 
-    databaseAPI.modifyPlant(plant);
-    props.navigation.goBack()
+  const addPlant = async () => {
+    const plant = {
+      name: plantName,
+      species: plantSpecies,
+      description: plantDescription
+    }
+
+    plantsCRUD.addPlant(plant).then(id => props.navigation.goBack()).catch(error => setError(true));
+  }
+
+  const editPlant = async () => {
+    const plant = {
+      id: props.route.params.id,
+      name: plantName,
+      species: plantSpecies,
+      description: plantDescription
+    }
+
+    plantsCRUD.modifyPlant(plant).then(id => props.navigation.goBack()).catch(error => setError(true));
+  }
+
+  // jeżeli dane nie zostały jeszcze pobrane z bazy to wyświetamy informacje o ładwaniu danych
+  if(loading){
+    return ( <LoadingScreen action="Ładowanie danych..." message="proszę czekać"/> );
+  }
+
+  // jeżeli wystąpił bład to wyświetamy odpowiedni komunikat
+  if(error){
+    return ( <ErrorScreen error="Błąd ładowania danych" message="spróbuj ponownie później"/> );
   }
 
   return (
@@ -52,9 +97,9 @@ const AlterPage = props => {
         />
         <TextInput 
           style={commonStyles.input}
-          placeholder='podlewanie...'
-          onChangeText={newText => setPlantWatering(newText)}
-          value={plantWatering}
+          placeholder='opis...'
+          onChangeText={newText => setPlantDescription(newText)}
+          value={plantDescription}
         />
         <Pressable 
           style={[commonStyles.button, commonStyles.primaryButton]}
