@@ -48,7 +48,10 @@ const IndexPage = props => {
       const id = "plant_" + plant.id;
 
       rendered.push(
-        <PlantListElement key={id} name={plant.name} onClick={() => openDetails(plant.id)}/>
+        <Pressable key={id} style={styles.plantContainer} onPress={() => openDetails(plant.id)} >
+          <Image source={{uri:plant.image + '?' + new Date()}} style={styles.image}  />
+          <PlantListElement key={id} name={plant.name} onClick={() => openDetails(plant.id)}/>
+        </Pressable>
       )
     });
 

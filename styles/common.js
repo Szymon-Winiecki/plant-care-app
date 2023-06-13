@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 600,
         color: Colors.primary,
-        marginHorizontal: 6,
-        marginVertical: 14,
+        marginHorizontal: 35,
+        marginVertical: 10,
     },
     em: {
         fontSize: 20,

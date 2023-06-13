@@ -22,7 +22,8 @@ const createPlantsTable = `create table if not exists plants(
     name varchar,
     species varchar,
     description text,
-    image varchar
+    image varchar,
+    wateringdays integer
 );`;
 
 const dropPlantsTable = `drop table if exists plants;`
@@ -31,9 +32,9 @@ const selectPlants = `select * from plants;`;
 
 const selectPlant = `select * from plants where id=?;`;
 
-const insertPlant = `insert into plants(name, species, description, image) values(?, ?, ?, ?);`;
+const insertPlant = `insert into plants(name, species, description, image, wateringdays) values(?, ?, ?, ?, ?);`;
 
-const updatePlant = `update plants set name=?, species=?, description=?, image=? where id=?;`;
+const updatePlant = `update plants set name=?, species=?, description=?, image=?, wateringdays=? where id=?;`;
 
 const deletePlant = `delete from plants where id=?;`;
 

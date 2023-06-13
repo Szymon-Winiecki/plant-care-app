@@ -4,7 +4,7 @@ import { defaultImageUri, generatePlantImageFileName } from "../constants/plantT
 import { getFileExtension, generatePlantImageUri, savePlantImage } from "../filesystem/filesystem";
 
 // increment to update db structure and reset data 
-const db_version = 8;
+const db_version = 10;
 
 let db = undefined;
 
@@ -90,6 +90,7 @@ let plants = [
         species: 'Aporocactus Mallisonii',
         description: 'podlewać dwa razy w tygodniu',
         image: defaultImageUri,
+        wateringdays: 0
     },
     {
         id: 1,
@@ -97,6 +98,7 @@ let plants = [
         species: 'Mięta pieprzowa',
         description: 'podlewać raz dziennie',
         image: defaultImageUri,
+        wateringdays: 10
     },
 ]
 
@@ -104,7 +106,7 @@ const populateData = (callback) => {
     if(!connected()) connect();
     for(let i = 0; i <  plants.length; i++){
         db.transaction(tx => {
-            tx.executeSql(queries.insertPlant, [plants[i].name, plants[i].species, plants[i].description, plants[i].image], (txObj, result) => {callback(result, null)}, (txObj, error) => {callback(null, error) });
+            tx.executeSql(queries.insertPlant, [plants[i].name, plants[i].species, plants[i].description, plants[i].image, plants[i].wateringdays], (txObj, result) => {callback(result, null)}, (txObj, error) => {callback(null, error) });
         });
     }
 }
@@ -134,12 +136,12 @@ const getPlant = async (id) => {
 const addPlant = async (plant) => {
     
     try{
-        const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description, plant.image]);
+        const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays]);
         const imageUri = generatePlantImageUri(generatePlantImageFileName(result.insertId) + getFileExtension(plant.image));
         await savePlantImage(plant.image, imageUri);
         plant.image = imageUri;
         plant.id = result.insertId;
-        await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.id]);
+        await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays, plant.id]);
         return result.insertId;
     }
     catch (error){
@@ -165,7 +167,7 @@ const modifyPlant = async (plant) => {
         const imageUri = generatePlantImageUri(generatePlantImageFileName(plant.id) + getFileExtension(plant.image));
         await savePlantImage(plant.image, imageUri);
         plant.image = imageUri;
-        const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.id]);
+        const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays, plant.id]);
         return result;
     }
     catch (error){
