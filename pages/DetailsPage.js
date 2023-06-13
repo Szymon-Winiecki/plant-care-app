@@ -11,7 +11,6 @@ const DetailsPage = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [plant, setPlant] = useState({});
-  const [notificationDays, setNotificationDays] = useState(0);
 
   const getPlant = async () => {
     plantsCRUD
@@ -24,16 +23,13 @@ const DetailsPage = (props) => {
         }
         setPlant(plant);
         setLoading(false);
-        setNotificationDays(plant.wateringdays)
       })
       .catch((error) => setError(true));
   };
 
   // modify watering days
-  const editPlant = async () => {
-    //to fix
-    //console.log(notificationDays);
-    //plant.wateringdays = notificationDays[0];
+  const editPlant = async (value) => {
+    plant.wateringdays = parseInt(value.split(" ")[0]);
     plantsCRUD
       .modifyPlant(plant)
       .then(getPlant())
@@ -58,9 +54,7 @@ const DetailsPage = (props) => {
   }
 
   const handlePickerChange = (id, value) => {
-    // to fix
-    setNotificationDays(value);
-    editPlant();
+    editPlant(value);
   };
 
   const renderPickerItems = () => {
