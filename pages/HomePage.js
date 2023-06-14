@@ -7,23 +7,9 @@ import { useEffect, useState } from 'react';
 
 const HomePage = props => {
 
-  const [weather, setWeather] = useState({});
-  const [loadingWeather, setLoadingWeather] = useState(true);
-
-  const getWeather = async () => {
-    const weather = await weatherAPI.getWeather(52.24, 16.56, 10);
-    console.log(weather);
-    setWeather(weather);
-    setLoadingWeather(false);
-  }
-
-  useEffect(() => {
-    getWeather();
-  }, []);
-
   return (
     <SafeAreaView style={styles.container}>
-      {!loadingWeather && <WeatherWidget days={weather} />}
+      <WeatherWidget />
       <View style={styles.innerContainer}>
         <Text style={commonStyles.title}>Witaj!</Text>
         <Text style={styles.description}>plant-care to apliakcja do zarządzania roślinami</Text>

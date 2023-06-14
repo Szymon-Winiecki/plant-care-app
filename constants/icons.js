@@ -1,6 +1,8 @@
 
 const empty = require('../assets/icons/empty_icon.png');
 
+const gear = require('../assets/icons/gear-white.png');
+
 /*
     water drops
 */
@@ -29,4 +31,4 @@ const lightRainShower = require('../assets/icons/cloud-sun-light-rain.png');
 const moderateRainShower = require('../assets/icons/cloud-sun-moderate-rain.png');
 const heavyRainShower = require('../assets/icons/cloud-sun-heavy-rain.png');
 
-export { empty, water_drop_error, water_drop_ok, water_drop_warning, sun, sunBehindCloud, cloud, cloudAndFog, clouds, heavyRain, lightRain, moderateRain, snow, storm, thermometerHalf, thermometerHigh, thermometerLow, droplet, lightRainShower, moderateRainShower, heavyRainShower };
+export { empty, gear, water_drop_error, water_drop_ok, water_drop_warning, sun, sunBehindCloud, cloud, cloudAndFog, clouds, heavyRain, lightRain, moderateRain, snow, storm, thermometerHalf, thermometerHigh, thermometerLow, droplet, lightRainShower, moderateRainShower, heavyRainShower };
