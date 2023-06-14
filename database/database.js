@@ -2,9 +2,10 @@ import { openDatabase, enablePromise } from "expo-sqlite";
 import * as queries from "./queries";
 import { defaultImageUri, generatePlantImageFileName } from "../constants/plantTemplates";
 import { getFileExtension, generatePlantImageUri, savePlantImage } from "../filesystem/filesystem";
+import { addDays } from "../helpers/dateTimeHelper";
 
 // increment to update db structure and reset data 
-const db_version = 15;
+const db_version = 18;
 
 let db = undefined;
 
@@ -91,20 +92,32 @@ const createSchema = async () => {
 
 let plants = [
     {
-        id: 0,
         name: 'Kaktus w pokoju',
         species: 'Aporocactus Mallisonii',
-        description: 'podlewać dwa razy w tygodniu',
+        description: 'Uwaga, kłujący!',
         image: defaultImageUri,
-        wateringdays: 0
+        wateringdays: 1
     },
     {
-        id: 1,
         name: 'Mięta w kuchni',
+        species: 'Mięta pieprzowa',
+        description: 'pięknie pachnie',
+        image: defaultImageUri,
+        wateringdays: 10
+    },
+    {
+        name: 'Rozmaryn na balkonie',
+        species: 'Rozmaryn zwycznajny',
+        description: 'Moja ulubiona roślina',
+        image: defaultImageUri,
+        wateringdays: 3
+    },
+    {
+        name: 'Łany burzanu',
         species: 'Mięta pieprzowa',
         description: 'podlewać raz dziennie',
         image: defaultImageUri,
-        wateringdays: 10
+        wateringdays: 4
     },
 ]
 
@@ -116,6 +129,12 @@ const populateData = async () => {
             console.log(error);
         }
     }
+
+    const now = Date.now();
+    await waterPlant(1, now);
+    await waterPlant(2, addDays(now, -10));
+    await waterPlant(3, addDays(now, -4));
+    await waterPlant(4, addDays(now, -10));
 }
 
 const getPlants = async () => {

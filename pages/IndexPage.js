@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import PlantListElement from '../components/PlantListElement';
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
+import { getWateringState, wateringStatesIcons } from '../logic/watering';
 
 const IndexPage = props => {
 
@@ -46,9 +47,9 @@ const IndexPage = props => {
 
     plants.forEach(plant => {
       const id = "plant_" + plant.id;
-
+      const icon = wateringStatesIcons[getWateringState(plant.last_watering, plant.wateringdays)];
       rendered.push(
-        <PlantListElement key={id} name={plant.name} img={{ uri: plant.image + '?' + new Date() }} onClick={() => openDetails(plant.id)} />
+        <PlantListElement key={id} name={plant.name} img={{ uri: plant.image + '?' + new Date() }} icon={icon} onClick={() => openDetails(plant.id)} />
       )
     });
 
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight || 0,
   },
   list: {
-    width: '70%',
+    width: '90%',
   },
 });
 
