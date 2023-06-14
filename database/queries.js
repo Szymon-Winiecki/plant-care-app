@@ -23,7 +23,8 @@ const createPlantsTable = `create table if not exists plants(
     species varchar,
     description text,
     image varchar,
-    wateringdays integer
+    wateringdays integer,
+    last_watering integer
 );`;
 
 const dropPlantsTable = `drop table if exists plants;`
@@ -38,4 +39,29 @@ const updatePlant = `update plants set name=?, species=?, description=?, image=?
 
 const deletePlant = `delete from plants where id=?;`;
 
-export {createPlantsTable, dropPlantsTable, selectPlants, selectPlant, insertPlant, updatePlant, deletePlant, createDBInfoTable, getLastDbVersion, insertDBVersion, updateDBVersion}
+
+/*
+    watering history table
+*/
+
+const createWateringTable = `create table if not exists watering(
+    id integer primary key,
+    plant_id integer,
+    timestamp integer
+);`;
+
+const dropWateringTable = `drop table if exists watering;`
+
+const selectWateringForPlant = `select * from watering where plant_id=?;`;
+const insertWatering = `insert into watering(plant_id, timestamp) values(?, ?);`;
+
+const createWateringTrigger = `create trigger if not exists onPlantWatering after insert on watering
+                                begin
+                                    update plants set last_watering=new.timestamp where id=new.plant_id and (new.timestamp > (select last_watering from plants where id=new.plant_id) or last_watering is null);
+                                end;`;
+
+const dropWateringTrigger = `drop trigger if exists onPlantWatering;`;
+
+
+
+export { createPlantsTable, dropPlantsTable, selectPlants, selectPlant, insertPlant, updatePlant, deletePlant, createDBInfoTable, getLastDbVersion, insertDBVersion, updateDBVersion, createWateringTable, dropWateringTable, selectWateringForPlant, insertWatering, createWateringTrigger, dropWateringTrigger }

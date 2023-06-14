@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable, Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable, Image, ScrollView } from 'react-native';
 import { plantsCRUD } from '../database/database';
 import { commonStyles } from '../styles/common';
 import { useIsFocused } from '@react-navigation/native';
@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
 import ModalDropdown from 'react-native-modal-dropdown';
+import PlantProperty from '../components/PlantProperty';
+import { formatTimestamp } from '../helpers/formatHelper';
 
 const DetailsPage = (props) => {
   const [loading, setLoading] = useState(true);
@@ -73,29 +75,35 @@ const DetailsPage = (props) => {
       <View>
         <Text style={commonStyles.title}>{plant.name}</Text>
       </View>
-      <View style={styles.propertyContainer}>
-        <Text style={commonStyles.label}>gatunek:</Text>
-        <Text style={commonStyles.property}>{plant.species}</Text>
-      </View>
-      <View style={styles.propertyContainer}>
-        <Text style={commonStyles.label}>opis:</Text>
-        <Text style={commonStyles.property}>{plant.description}</Text>
-      </View>
-      <View style={styles.propertyContainer}>
-      <Text style={commonStyles.label}>podlewanie co:</Text>
-        <ModalDropdown
-          options={renderPickerItems()}
-          defaultValue={`${plant.wateringdays} ${plant.wateringdays != 1 ? 'dni' : 'dzień'}`}
-          textStyle={styles.pickerText}
-          dropdownStyle={styles.dropDownContainer}
-          onSelect={(id, val) => handlePickerChange(id, val)}
-        />
-      </View>
+      <ScrollView>
+        <PlantProperty label="gatunek" property={plant.species} />
+        <PlantProperty label="opis" property={plant.description} />
+        <View style={styles.propertyContainer}>
+          <Text style={commonStyles.label}>podlewanie co:</Text>
+          <ModalDropdown
+            options={renderPickerItems()}
+            defaultValue={`${plant.wateringdays} ${plant.wateringdays != 1 ? 'dni' : 'dzień'}`}
+            textStyle={styles.pickerText}
+            dropdownStyle={styles.dropDownContainer}
+            onSelect={(id, val) => handlePickerChange(id, val)}
+          />
+        </View>
+        <PlantProperty label="ostatnio podlewany" property={formatTimestamp(plant.last_watering)} />
+      </ScrollView>
       <Pressable
         style={[commonStyles.button, commonStyles.primaryButton]}
         onPress={() => props.navigation.navigate('EditPlant', { id: plant.id })}
       >
         <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>edytuj</Text>
+      </Pressable>
+      <Pressable
+        style={[commonStyles.button, commonStyles.primaryButton]}
+        onPress={async () => {
+          plantsCRUD.waterPlantNow(plant.id);
+          getPlant();
+        }}
+      >
+        <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>podlej</Text>
       </Pressable>
       <StatusBar style="auto" />
     </SafeAreaView>

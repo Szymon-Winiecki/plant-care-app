@@ -4,12 +4,12 @@ import { defaultImageUri, generatePlantImageFileName } from "../constants/plantT
 import { getFileExtension, generatePlantImageUri, savePlantImage } from "../filesystem/filesystem";
 
 // increment to update db structure and reset data 
-const db_version = 10;
+const db_version = 15;
 
 let db = undefined;
 
 const connected = () => {
-    if(db == undefined){
+    if (db == undefined) {
         return false;
     }
     return true;
@@ -28,7 +28,7 @@ const transaction = () => {
 }
 
 const execSQL = async (query, args) => {
-    if(!connected()) connect();
+    if (!connected()) connect();
 
     let tx = await transaction();
     return new Promise((resolve, reject) => {
@@ -38,13 +38,11 @@ const execSQL = async (query, args) => {
 
 
 const recreateDB = async () => {
-    dropSchema()
-        .then(createSchema()
-                .then(populateData((data, error) => {
-                    if(error) console.log(error);
-                }))
-                .catch(error => console.log(error)))
-        .catch(error => console.log(error));
+
+    await dropSchema();
+    await createSchema();
+    await populateData();
+
 }
 
 const init = () => {
@@ -53,34 +51,42 @@ const init = () => {
 
 // sprawdza czy zmieniła się wersja bazy danych (db_version) i w razie potrzeby tworzy ją na nowo
 const handleDb = async () => {
-    execSQL(queries.createDBInfoTable, null)
-        .then(execSQL(queries.getLastDbVersion, null)
-                .then(data => { console.log(data.rows._array);
-                                if(data.rows._array.length == 0)
-                                    execSQL(queries.insertDBVersion, [db_version]).then(recreateDB().catch(error => console.log(error))).catch(error => console.log(error));
-                                else if(data.rows._array[0]['last_db_version'] != db_version)
-                                    execSQL(queries.updateDBVersion, [db_version]).then(recreateDB().catch(error => console.log(error))).catch(error => console.log(error));
-                                    
-                                
-                })
-                .catch(error => console.log(error)))
-        .catch(error => console.log(error));
+    try {
+        await execSQL(queries.createDBInfoTable, null);
+        const result = await execSQL(queries.getLastDbVersion, null);
+        console.log(result.rows._array);
+        if (result.rows._array.length == 0) {
+            await execSQL(queries.insertDBVersion, [db_version]);
+            await recreateDB();
+        }
+        else if (result.rows._array[0]['last_db_version'] != db_version) {
+            await execSQL(queries.updateDBVersion, [db_version]);
+            await recreateDB();
+        }
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const dropSchema = async () => {
-    if(!connected()) connect();
-    let tx = await transaction();
-    return new Promise((resolve, reject) => {
-        tx.executeSql(queries.dropPlantsTable, null, (txObj, result) => { resolve(result) }, (txObj, error) => { reject(error) });
-    });
+    try {
+        await execSQL(queries.dropWateringTrigger, null);
+        await execSQL(queries.dropPlantsTable, null);
+        await execSQL(queries.dropWateringTable, null);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const createSchema = async () => {
-    if(!connected()) connect();
-    let tx = await transaction();
-    return new Promise((resolve, reject) => {
-        tx.executeSql(queries.createPlantsTable, null, (txObj, result) => { resolve(result) }, (txObj, error) => { reject(error) });
-    });
+    try {
+        await execSQL(queries.createPlantsTable, null);
+        await execSQL(queries.createWateringTable, null);
+        await execSQL(queries.createWateringTrigger, null);
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
 let plants = [
@@ -102,40 +108,41 @@ let plants = [
     },
 ]
 
-const populateData = (callback) => {
-    if(!connected()) connect();
-    for(let i = 0; i <  plants.length; i++){
-        db.transaction(tx => {
-            tx.executeSql(queries.insertPlant, [plants[i].name, plants[i].species, plants[i].description, plants[i].image, plants[i].wateringdays], (txObj, result) => {callback(result, null)}, (txObj, error) => {callback(null, error) });
-        });
+const populateData = async () => {
+    for (let i = 0; i < plants.length; i++) {
+        try {
+            await execSQL(queries.insertPlant, [plants[i].name, plants[i].species, plants[i].description, plants[i].image, plants[i].wateringdays]);
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
 const getPlants = async () => {
-    try{
+    try {
         const result = await execSQL(queries.selectPlants, null);
         return result.rows._array;
     }
-    catch (error){
+    catch (error) {
         console.log(error);
         return [];
     }
 }
 
 const getPlant = async (id) => {
-    try{
+    try {
         const result = await execSQL(queries.selectPlant, [id]);
         return result.rows._array[0];
     }
-    catch (error){
+    catch (error) {
         console.log(error);
         return null;
     }
 }
 
 const addPlant = async (plant) => {
-    
-    try{
+
+    try {
         const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays]);
         const imageUri = generatePlantImageUri(generatePlantImageFileName(result.insertId) + getFileExtension(plant.image));
         await savePlantImage(plant.image, imageUri);
@@ -144,39 +151,68 @@ const addPlant = async (plant) => {
         await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays, plant.id]);
         return result.insertId;
     }
-    catch (error){
+    catch (error) {
         console.log(error);
         return null;
     }
 }
 
 const removePlant = async (id) => {
-    try{
+    try {
         const result = await execSQL(queries.deletePlant, [id]);
         console.log(result);
         return result;
     }
-    catch (error){
+    catch (error) {
         console.log(error);
         return null;
     }
 }
 
 const modifyPlant = async (plant) => {
-    try{
+    try {
         const imageUri = generatePlantImageUri(generatePlantImageFileName(plant.id) + getFileExtension(plant.image));
         await savePlantImage(plant.image, imageUri);
         plant.image = imageUri;
         const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays, plant.id]);
         return result;
     }
-    catch (error){
+    catch (error) {
         console.log(error);
         return null;
     }
 }
 
-const plantsCRUD = { getPlants, getPlant, addPlant, removePlant, modifyPlant };
+const waterPlant = async (id, timestamp) => {
+    try {
+        const result = await execSQL(queries.insertWatering, [id, timestamp]);
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const waterPlantNow = async (id) => {
+    const timestamp = Date.now();
+    return await waterPlant(id, timestamp);
+}
+
+const getWateringForPlant = async (id) => {
+
+    try {
+        const result = await execSQL(queries.selectWateringForPlant, [id]);
+        console.log(result);
+        return result.rows._array;
+    }
+    catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const plantsCRUD = { getPlants, getPlant, addPlant, removePlant, modifyPlant, waterPlant, waterPlantNow, getWateringForPlant };
 const dbManagement = { init };
 
 export { plantsCRUD, dbManagement }
