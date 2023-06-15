@@ -13,7 +13,7 @@ const WeatherWidget = props => {
 
   const [weatherSettingsModalVisibility, setWeatherSettingsModalVisibility] = useState(false);
 
-  const [weather, setWeather] = useState({});
+  const [weather, setWeather] = useState();
   const [loadingWeather, setLoadingWeather] = useState(true);
 
   const [lat, setLat] = useState(52.24);
@@ -21,9 +21,15 @@ const WeatherWidget = props => {
   const [days, setDays] = useState(10);
   const [locationName, setLocationName] = useState('Poznań');
 
+  const [latSettings, setLatSettings] = useState(52.24);
+  const [lonSettings, setLonSettings] = useState(16.56);
+  const [daysSettings, setDaysSettings] = useState(10);
+  const [locationNameSettings, setLocationNameSettings] = useState('Poznań');
+
   const getWeather = async () => {
-    const weather = await weatherAPI.getWeather(lat, lon, days);
-    setWeather(weather);
+    setLoadingWeather(true);
+    const weatherForecast = await weatherAPI.getWeather(lat, lon, days);
+    setWeather(weatherForecast);
     setLoadingWeather(false);
   }
 
@@ -34,13 +40,17 @@ const WeatherWidget = props => {
       return;
     }
     let location = await Location.getCurrentPositionAsync({});
-    setLat(location.coords.latitude);
-    setLon(location.coords.longitude);
+    setLatSettings(location.coords.latitude);
+    setLonSettings(location.coords.longitude);
 
-    let locationName = await geocodingAPI.getLocation(lat, lon);
+    let locationName = await geocodingAPI.getLocation(location.coords.latitude, location.coords.longitude);
 
-    setLocationName(`${locationName.city ? locationName.city : locationName.state}, ${locationName.country}`);
+    setLocationNameSettings(`${locationName.city ? locationName.city : locationName.state}, ${locationName.country}`);
   }
+
+  useEffect(() => {
+    getWeather();
+  }, [locationName]);
 
   useEffect(() => {
     getWeather();
@@ -49,9 +59,9 @@ const WeatherWidget = props => {
   const renderDays = () => {
     let list = [];
 
-    weather.forEach((day, i) => {
+    weather.forEach((day) => {
       list.push(
-        <DailyWeather key={i} weather={day} />
+        <DailyWeather key={day.date} weather={day} />
       );
     });
 
@@ -68,13 +78,16 @@ const WeatherWidget = props => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 10 }}>
-        <Text style={styles.titleText}>Pogoda na najbliższe dni ({locationName}): </Text>
+      <View style={styles.weatherHeader}>
+        <View style={{ flexDirection: 'column', alignItems: 'center', marginHorizontal: 10 }}>
+          <Text style={styles.titleText}>Pogoda na najbliższe dni </Text>
+          <Text style={styles.locationText}>{locationName} </Text>
+        </View>
         <Pressable
           style={[commonStyles.button, commonStyles.primaryButton]}
           onPress={() => setWeatherSettingsModalVisibility(true)}
         >
-          <Image source={Icons.gear} style={{ width: 20, height: 20 }}></Image>
+          <Image source={Icons.gearWhite} style={{ width: 20, height: 20 }}></Image>
         </Pressable>
       </View>
       <ScrollView horizontal>
@@ -91,8 +104,8 @@ const WeatherWidget = props => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>lokalizacja: </Text>
-            <Text>{locationName}</Text>
-            <Text>({lat}, {lon})</Text>
+            <Text>{locationNameSettings}</Text>
+            <Text>({latSettings.toFixed(2)}, {lonSettings.toFixed(2)})</Text>
             <Pressable
               style={[commonStyles.button, commonStyles.primaryButton]}
               onPress={getLocation}>
@@ -102,7 +115,10 @@ const WeatherWidget = props => {
               <Pressable
                 style={[commonStyles.button, commonStyles.primaryButton]}
                 onPress={() => {
-                  getLocation();
+                  setLat(latSettings);
+                  setLon(lonSettings);
+                  setDays(daysSettings);
+                  setLocationName(locationNameSettings);
                   setWeatherSettingsModalVisibility(!weatherSettingsModalVisibility)
                 }}>
                 <Text style={commonStyles.primaryButtonText}>ok</Text>
@@ -127,9 +143,17 @@ const styles = StyleSheet.create({
     height: 250,
     alignItems: 'center',
   },
+  weatherHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
   titleText: {
     fontSize: 16,
     fontWeight: 500,
+  },
+  locationText: {
+    fontSize: 16,
   },
 
   /* modal */
