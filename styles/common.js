@@ -12,9 +12,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 30,
         fontWeight: 600,
-        color: Colors.primary,
+        color: Colors.textPrimary,
         marginHorizontal: 35,
         marginVertical: 10,
+    },
+    text: {
+        color: Colors.textSecondary,
     },
     em: {
         fontSize: 20,
@@ -28,7 +31,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         textAlign: 'center',
     },
-    buttonText:{
+    buttonText: {
         textAlign: 'center',
     },
     primaryButton: {
@@ -37,11 +40,34 @@ const styles = StyleSheet.create({
     primaryButtonText: {
         color: Colors.textAlt,
     },
-    secondaryButton:{
+    secondaryButton: {
         backgroundColor: Colors.secondary,
     },
     secondaryButtonText: {
         color: Colors.textAlt,
+    },
+    iconButton: {
+        padding: 5,
+        margin: 6,
+        borderRadius: 40,
+    },
+    iconButtonIcon: {
+        width: 20,
+        height: 20,
+        margin: 4,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    iconButtonText: {
+        width: 30,
+        height: 30,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: 600
     },
     input: {
         borderBottomWidth: 1,
@@ -56,4 +82,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export { styles as commonStyles}
+export { styles as commonStyles }

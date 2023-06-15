@@ -34,7 +34,7 @@ const wateringStatesRanges = [
 ];
 
 const wateringStatesIcons = {}
-wateringStatesIcons[wateringStates.DO_NOT_WATER] = Icons.empty;
+wateringStatesIcons[wateringStates.DO_NOT_WATER] = Icons.green_check;
 wateringStatesIcons[wateringStates.TO_WATER] = Icons.water_drop_ok;
 wateringStatesIcons[wateringStates.WATER_WARNING] = Icons.water_drop_warning;
 wateringStatesIcons[wateringStates.WATER_CRITICAL] = Icons.water_drop_error;

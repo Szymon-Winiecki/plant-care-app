@@ -1,13 +1,17 @@
 import { StyleSheet, Text, View, ScrollView, Modal, Pressable, Image } from 'react-native';
+import { useEffect, useState } from 'react';
+import * as Location from 'expo-location';
 
 import * as Icons from '../../constants/icons';
-import { Colors } from '../../constants/colors';
-import DailyWeather from './DailyWeather';
-import { useEffect, useState } from 'react';
+import * as Colors from '../../constants/colors';
 import { commonStyles } from '../../styles/common';
+import { modalStyles } from '../../styles/modal';
+
 import * as weatherAPI from '../../api/weatherAPI';
 import * as geocodingAPI from '../../api/geocodingAPI'
-import * as Location from 'expo-location';
+
+import DailyWeather from './DailyWeather';
+import { TextInput } from 'react-native';
 
 const WeatherWidget = props => {
 
@@ -50,7 +54,7 @@ const WeatherWidget = props => {
 
   useEffect(() => {
     getWeather();
-  }, [locationName]);
+  }, [locationName, days, lon, lat]);
 
   useEffect(() => {
     getWeather();
@@ -79,16 +83,19 @@ const WeatherWidget = props => {
   return (
     <View style={styles.container}>
       <View style={styles.weatherHeader}>
-        <View style={{ flexDirection: 'column', alignItems: 'center', marginHorizontal: 10 }}>
+        <View style={{ flex: 1 }}></View>
+        <View style={{ flex: 4, flexDirection: 'column', alignItems: 'center', marginHorizontal: 10 }}>
           <Text style={styles.titleText}>Pogoda na najbliższe dni </Text>
           <Text style={styles.locationText}>{locationName} </Text>
         </View>
-        <Pressable
-          style={[commonStyles.button, commonStyles.primaryButton]}
-          onPress={() => setWeatherSettingsModalVisibility(true)}
-        >
-          <Image source={Icons.gearWhite} style={{ width: 20, height: 20 }}></Image>
-        </Pressable>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Pressable
+            style={[commonStyles.iconButton, commonStyles.primaryButton]}
+            onPress={() => setWeatherSettingsModalVisibility(true)}
+          >
+            <Image source={Icons.gearWhite} style={[commonStyles.iconButtonIcon]}></Image>
+          </Pressable>
+        </View>
       </View>
       <ScrollView horizontal>
         {renderDays()}
@@ -101,35 +108,68 @@ const WeatherWidget = props => {
         onRequestClose={() => {
           setWeatherSettingsModalVisibility(!weatherSettingsModalVisibility);
         }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>lokalizacja: </Text>
-            <Text>{locationNameSettings}</Text>
-            <Text>({latSettings.toFixed(2)}, {lonSettings.toFixed(2)})</Text>
-            <Pressable
-              style={[commonStyles.button, commonStyles.primaryButton]}
-              onPress={getLocation}>
-              <Text style={commonStyles.primaryButtonText}>pobierz lokalizacje</Text>
-            </Pressable>
-            <View style={{ flexDirection: 'row' }}>
-              <Pressable
-                style={[commonStyles.button, commonStyles.primaryButton]}
-                onPress={() => {
-                  setLat(latSettings);
-                  setLon(lonSettings);
-                  setDays(daysSettings);
-                  setLocationName(locationNameSettings);
-                  setWeatherSettingsModalVisibility(!weatherSettingsModalVisibility)
-                }}>
-                <Text style={commonStyles.primaryButtonText}>ok</Text>
-              </Pressable>
-              <Pressable
-                style={[commonStyles.button, commonStyles.secondaryButton]}
-                onPress={() => {
-                  setWeatherSettingsModalVisibility(!weatherSettingsModalVisibility)
-                }}>
-                <Text style={commonStyles.secondaryButtonText}>anuluj</Text>
-              </Pressable>
+        <View style={modalStyles.centeredView}>
+          <View style={modalStyles.modalView}>
+            <View style={modalStyles.modalHeader}>
+              <Text style={modalStyles.modalTitle}>Ustawienia pogody</Text>
+            </View>
+
+            <View style={modalStyles.modalBody}>
+              <View style={styles.fullWidthRow}>
+                <Text style={styles.categoryLabel}>Lokalizacja:</Text>
+              </View>
+              <View style={styles.fullWidthRow}>
+                <Text>{locationNameSettings}</Text>
+                <Text>({latSettings.toFixed(2)}, {lonSettings.toFixed(2)})</Text>
+              </View>
+              <View style={styles.fullWidthRow}>
+                <Text style={modalStyles.modalText}>ustaw z GPS: </Text>
+                <Pressable
+                  style={[commonStyles.iconButton, commonStyles.primaryButton]}
+                  onPress={getLocation}>
+                  <Image source={Icons.locationWhite} style={commonStyles.iconButtonIcon}></Image>
+                </Pressable>
+              </View>
+
+              <View style={styles.fullWidthRow}>
+                <Text style={styles.categoryLabel}>Ilość dni:</Text>
+              </View>
+              <View style={styles.fullWidthRow}>
+                <Pressable
+                  style={[commonStyles.iconButton, commonStyles.primaryButton, { backgroundColor: Colors.backgroundColor }]}
+                  onPress={() => setDaysSettings(old => old - 1)}>
+                  <Image source={Icons.minusSquare} style={[commonStyles.iconButtonIcon]}></Image>
+                </Pressable>
+                <Text>{daysSettings}</Text>
+                <Pressable
+                  style={[commonStyles.iconButton, commonStyles.primaryButton, { backgroundColor: Colors.backgroundColor }]}
+                  onPress={() => setDaysSettings(old => old + 1)}>
+                  <Image source={Icons.plusSquare} style={[commonStyles.iconButtonIcon]}></Image>
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={modalStyles.modalFooter}>
+              <View style={{ flexDirection: 'row' }}>
+                <Pressable
+                  style={[commonStyles.button, commonStyles.primaryButton]}
+                  onPress={() => {
+                    setLat(latSettings);
+                    setLon(lonSettings);
+                    setDays(daysSettings);
+                    setLocationName(locationNameSettings);
+                    setWeatherSettingsModalVisibility(!weatherSettingsModalVisibility)
+                  }}>
+                  <Text style={commonStyles.primaryButtonText}>ok</Text>
+                </Pressable>
+                <Pressable
+                  style={[commonStyles.button, commonStyles.secondaryButton]}
+                  onPress={() => {
+                    setWeatherSettingsModalVisibility(!weatherSettingsModalVisibility)
+                  }}>
+                  <Text style={commonStyles.secondaryButtonText}>anuluj</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         </View>
@@ -155,33 +195,19 @@ const styles = StyleSheet.create({
   locationText: {
     fontSize: 16,
   },
-
-  /* modal */
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
+  fullWidthColumn: {
+    width: '100%',
+  },
+  fullWidthRow: {
+    width: '100%',
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 22,
+    marginVertical: 5,
   },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  categoryLabel: {
+    fontWeight: 600,
+    fontSize: 16,
+  }
 });
 
 export default WeatherWidget;

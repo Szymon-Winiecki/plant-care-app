@@ -10,14 +10,17 @@ import PlantListElement from '../components/PlantListElement';
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
 import { getWateringState, wateringStatesIcons } from '../logic/watering';
+import InfoModal from '../components/InfoModal';
+import WateringDropsLegend from '../components/WateringDropsLegend';
 
 const IndexPage = props => {
 
   // określa, czy dane zostały już pobrane z bazy
   const [loading, setLoading] = useState(true);
-
   // określa, czy wystąpił błąd podczas ładowania danych
   const [error, setError] = useState(false);
+
+  const [legendVisibility, setLegendVisibility] = useState(false);
 
   let [plants, setPlants] = useState([]);
 
@@ -68,15 +71,22 @@ const IndexPage = props => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <InfoModal title='Legenda' body={<WateringDropsLegend />} visible={legendVisibility} setVisibility={(visibility) => setLegendVisibility(visibility)} />
       <View>
         <Text style={commonStyles.title} >TWOJE ROŚLINY</Text>
       </View>
-      <View style={commonStyles.row}>
+      <View style={styles.buttonsRow}>
         <Pressable
           style={[commonStyles.button, commonStyles.primaryButton]}
           onPress={() => props.navigation.navigate('AddPlant', { action: 'add' })}
         >
           <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>dodaj</Text>
+        </Pressable>
+        <Pressable
+          style={[commonStyles.iconButton, commonStyles.primaryButton]}
+          onPress={() => setLegendVisibility(true)}
+        >
+          <Text style={[commonStyles.iconButtonText, commonStyles.primaryButtonText]}>?</Text>
         </Pressable>
       </View>
       <ScrollView style={styles.list}>
@@ -96,6 +106,11 @@ const styles = StyleSheet.create({
   list: {
     width: '90%',
   },
+  buttonsRow: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  }
 });
 
 export default IndexPage;
