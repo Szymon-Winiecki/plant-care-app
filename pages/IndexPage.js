@@ -54,7 +54,7 @@ const IndexPage = props => {
       const id = "plant_" + plant.id;
       const icon = wateringStatesIcons[getWateringState(plant.last_watering, plant.wateringdays)];
       rendered.push(
-        <PlantListElement key={id} name={plant.name} img={{ uri: plant.image + '?' + new Date() }} icon={icon} onClick={() => openDetails(plant.id)} />
+        <PlantListElement key={id} name={plant.name} img={Platform.OS === 'android' ? {uri: plant.image + '?' + new Date()} : {uri: plant.image}} icon={icon} onClick={() => openDetails(plant.id)} />
       )
     });
 

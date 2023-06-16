@@ -114,7 +114,7 @@ const AlterPage = props => {
     }
 
     const pickerResult = await ImagePicker.launchImageLibraryAsync();
-    if (!pickerResult.cancelled) {
+    if (!pickerResult.canceled) {
       setPlantImage(pickerResult.assets[0].uri);
     }
   };
@@ -128,7 +128,7 @@ const AlterPage = props => {
     }
 
     const pickerResult = await ImagePicker.launchCameraAsync();
-    if (!pickerResult.cancelled) {
+    if (!pickerResult.canceled) {
       setPlantImage(pickerResult.assets[0].uri);
     }
   };

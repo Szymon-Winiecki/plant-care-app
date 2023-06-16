@@ -73,7 +73,7 @@ const DetailsPage = (props) => {
         setVisibility={(visibility) => setDeleteConfirmModalVisibility(visibility)}
       />
       <View>
-        <Image source={{ uri: plant.image + '?' + new Date() }} style={styles.image} />
+        <Image source={Platform.OS === 'android' ? {uri: plant.image + '?' + new Date()} : {uri: plant.image}} style={styles.image} />
       </View>
       <View>
         <Text style={commonStyles.title}>{plant.name}</Text>
