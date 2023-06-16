@@ -30,6 +30,9 @@ const styles = StyleSheet.create({
         margin: 6,
         borderRadius: 4,
         textAlign: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     flexButton: {
         margin: 6,

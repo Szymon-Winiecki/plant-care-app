@@ -13,6 +13,7 @@ import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
 import PlantProperty from '../components/PlantProperty';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import TIButton from '../components/TIButton';
 
 const DetailsPage = (props) => {
 
@@ -84,7 +85,31 @@ const DetailsPage = (props) => {
         <PlantProperty label="ostatnio podlewany" property={formatTimestamp(plant.last_watering)} />
       </ScrollView>
       <View style={styles.buttonsRow}>
-        <Pressable
+        <TIButton
+          onPress={() => props.navigation.navigate('EditPlant', { id: plant.id })}
+          flexButton
+          text="edytuj"
+          icon={Icons.edit}
+          buttonStyle={[commonStyles.primaryButton, { paddingVertical: 12 }]}
+        />
+        <TIButton
+          onPress={() => { setDeleteConfirmModalVisibility(true) }}
+          flexButton
+          text="usuń"
+          icon={Icons.trash}
+          buttonStyle={[commonStyles.redButton, { paddingVertical: 12 }]}
+        />
+        <TIButton
+          onPress={async () => {
+            plantsCRUD.waterPlantNow(plant.id);
+            getPlant();
+          }}
+          flexButton
+          text="podlej"
+          icon={Icons.watering_can}
+          buttonStyle={[commonStyles.primaryButton, { paddingVertical: 12 }]}
+        />
+        {/* <Pressable
           style={[commonStyles.flexButton, commonStyles.primaryButton, { flex: 1 }]}
           onPress={() => props.navigation.navigate('EditPlant', { id: plant.id })}
         >
@@ -113,7 +138,7 @@ const DetailsPage = (props) => {
             <Image style={commonStyles.buttonIcon} source={Icons.watering_can}></Image>
             <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText, { marginLeft: 10 }]}>podlej</Text>
           </View>
-        </Pressable>
+        </Pressable> */}
       </View>
       <StatusBar style="auto" />
     </SafeAreaView>

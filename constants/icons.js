@@ -6,9 +6,13 @@ const gearBlack = require('../assets/icons/gear-black.png');
 const locationBlack = require('../assets/icons/location-black.png');
 const locationWhite = require('../assets/icons/location-white.png');
 const plusSquare = require('../assets/icons/plus-square.png');
+const plusSquareWhite = require('../assets/icons/plus-square-white.png');
 const minusSquare = require('../assets/icons/minus-square.png');
 const edit = require('../assets/icons/pencil-square.png');
 const trash = require('../assets/icons/trash.png');
+const camera = require('../assets/icons/camera-white.png');
+const image = require('../assets/icons/image-white.png');
+const plant = require('../assets/icons/plant-white.png');
 
 /*
     watering
@@ -40,4 +44,4 @@ const lightRainShower = require('../assets/icons/cloud-sun-light-rain.png');
 const moderateRainShower = require('../assets/icons/cloud-sun-moderate-rain.png');
 const heavyRainShower = require('../assets/icons/cloud-sun-heavy-rain.png');
 
-export { empty, gearWhite, gearBlack, locationBlack, locationWhite, plusSquare, minusSquare, edit, trash, watering_can, green_check, water_drop_error, water_drop_ok, water_drop_warning, sun, sunBehindCloud, cloud, cloudAndFog, clouds, heavyRain, lightRain, moderateRain, snow, storm, thermometerHalf, thermometerHigh, thermometerLow, droplet, lightRainShower, moderateRainShower, heavyRainShower };
+export { empty, gearWhite, gearBlack, camera, image, plant, locationBlack, locationWhite, plusSquare, plusSquareWhite, minusSquare, edit, trash, watering_can, green_check, water_drop_error, water_drop_ok, water_drop_warning, sun, sunBehindCloud, cloud, cloudAndFog, clouds, heavyRain, lightRain, moderateRain, snow, storm, thermometerHalf, thermometerHigh, thermometerLow, droplet, lightRainShower, moderateRainShower, heavyRainShower };

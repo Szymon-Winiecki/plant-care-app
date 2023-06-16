@@ -1,17 +1,19 @@
 import { StyleSheet, Text, View, ScrollView, SafeAreaView, StatusBar, Pressable, Image } from 'react-native';
-
-import { plantsCRUD } from '../database/database';
-
-import { commonStyles } from '../styles/common';
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+
+import { plantsCRUD } from '../database/database';
+import { getWateringState, wateringStatesIcons } from '../logic/watering';
+
+import { commonStyles } from '../styles/common';
+import * as Icons from '../constants/icons';
 
 import PlantListElement from '../components/PlantListElement';
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
-import { getWateringState, wateringStatesIcons } from '../logic/watering';
 import InfoModal from '../components/InfoModal';
 import WateringDropsLegend from '../components/WateringDropsLegend';
+import TIButton from '../components/TIButton';
 
 const IndexPage = props => {
 
@@ -76,12 +78,11 @@ const IndexPage = props => {
         <Text style={commonStyles.title} >TWOJE ROŚLINY</Text>
       </View>
       <View style={styles.buttonsRow}>
-        <Pressable
-          style={[commonStyles.button, commonStyles.primaryButton]}
+        <TIButton
           onPress={() => props.navigation.navigate('AddPlant', { action: 'add' })}
-        >
-          <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>dodaj</Text>
-        </Pressable>
+          icon={Icons.plusSquareWhite}
+          text="dodaj"
+        />
         <Pressable
           style={[commonStyles.iconButton, commonStyles.primaryButton]}
           onPress={() => setLegendVisibility(true)}

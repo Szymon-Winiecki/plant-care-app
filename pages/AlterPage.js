@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable, Image, TextInput, KeyboardAvoidingView, ScrollView, Dimensions, Keyboard } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import ModalDropdown from 'react-native-modal-dropdown';
+
 import { plantsCRUD } from '../database/database';
+import { defaultImageUri } from '../constants/plantTemplates';
+
 import { commonStyles } from '../styles/common';
+import * as Icons from '../constants/icons';
+
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
-import * as ImagePicker from 'expo-image-picker';
-import { defaultImageUri } from '../constants/plantTemplates';
-import ModalDropdown from 'react-native-modal-dropdown';
+import TIButton from '../components/TIButton';
 
 const AlterPage = props => {
   // true, jeżeli edytujemy istniejącą roślinę, false jeżeli dodajemmy nową
@@ -26,8 +31,8 @@ const AlterPage = props => {
 
   const [keyboardHeight, setKeyboardHeight] = useState(50);
   const windowHeight = Dimensions.get('window').height;
- 
- 
+
+
   const getPlant = async () => {
     plantsCRUD
       .getPlant(props.route.params.id)
@@ -136,16 +141,29 @@ const AlterPage = props => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="position" keyboardVerticalOffset={Platform.OS==='android' ? -keyboardHeight/2 : 50}>
+    <KeyboardAvoidingView style={styles.container} behavior="position" keyboardVerticalOffset={Platform.OS === 'android' ? -keyboardHeight / 2 : 50}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={commonStyles.title}>{edit ? 'Edytuj' : 'Dodaj nową'} roślinę</Text>
         <View style={styles.innerContainer}>
           <View style={styles.imageContainer}>
             <Image source={{ uri: plantImage }} style={styles.image} />
-            <Pressable
+            <TIButton
+              onPress={openImagePickerAsync}
+              icon={Icons.image}
+              text="wybierz obraz"
+              buttonStyle={[commonStyles.secondaryButton, { width: 200 }]}
+            />
+            <TIButton
+              onPress={openCameraAsync}
+              icon={Icons.camera}
+              text="zrób zdjęcie"
+              buttonStyle={[commonStyles.secondaryButton, { width: 200 }]}
+            />
+            {/* <Pressable
               style={[commonStyles.button, commonStyles.secondaryButton]}
               onPress={openImagePickerAsync}
             >
+              <Image style={commonStyles.buttonIcon} source={Icons.image}></Image>
               <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Choose Image</Text>
             </Pressable>
             <Pressable
@@ -153,60 +171,59 @@ const AlterPage = props => {
               onPress={openCameraAsync}
             >
               <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Take Photo</Text>
-            </Pressable>
+            </Pressable> */}
           </View>
-         
-            <TextInput
-              style={commonStyles.input}
-              placeholder="nazwa rośliny..."
-              onChangeText={newText => setPlantName(newText)}
-              value={plantName}
+
+          <TextInput
+            style={commonStyles.input}
+            placeholder="nazwa rośliny..."
+            onChangeText={newText => setPlantName(newText)}
+            value={plantName}
+          />
+
+          <TextInput
+            style={commonStyles.input}
+            placeholder="gatunek..."
+            onChangeText={newText => setPlantSpecies(newText)}
+            value={plantSpecies}
+          />
+
+
+          <TextInput
+            style={commonStyles.input}
+            placeholder="opis..."
+            onChangeText={newText => setPlantDescription(newText)}
+            value={plantDescription}
+          />
+          <View style={styles.propertyContainer}>
+            <Text>podlewanie co:</Text>
+            <ModalDropdown
+              options={renderPickerItems()}
+              defaultValue={`${plantWateringDays} ${plantWateringDays != 1 ? 'dni' : 'dzień'}`}
+              textStyle={styles.pickerText}
+              dropdownStyle={styles.dropDownContainer}
+              onSelect={(id, val) => setPlantWateringDays(parseInt(val.split(" ")[0]))}
             />
-          
-            <TextInput
-              style={commonStyles.input}
-              placeholder="gatunek..."
-              onChangeText={newText => setPlantSpecies(newText)}
-              value={plantSpecies}
+          </View>
+
+          <View style={styles.buttonsRow}>
+            <TIButton
+              onPress={() => {
+                if (edit) editPlant();
+                else addPlant();
+              }}
+              flexButton
+              text={edit ? 'zmień' : 'dodaj'}
             />
-         
-          
-            <TextInput
-              style={commonStyles.input}
-              placeholder="opis..."
-              onChangeText={newText => setPlantDescription(newText)}
-              value={plantDescription}
+            <TIButton
+              onPress={() => {
+                props.navigation.goBack();
+              }}
+              text="Anuluj"
+              flexButton
+              buttonStyle={[commonStyles.secondaryButton, { paddingVertical: 12 }]}
             />
-            <View style={styles.propertyContainer}>
-              <Text>podlewanie co:</Text>
-              <ModalDropdown
-                options={renderPickerItems()}
-                defaultValue={`${plantWateringDays} ${plantWateringDays != 1 ? 'dni' : 'dzień'}`}
-                textStyle={styles.pickerText}
-                dropdownStyle={styles.dropDownContainer}
-                onSelect={(id, val) => setPlantWateringDays(parseInt(val.split(" ")[0]))}
-              />
-            </View>
-         
-          <Pressable
-            style={[commonStyles.button, commonStyles.primaryButton]}
-            onPress={() => {
-              if (edit) editPlant();
-              else addPlant();
-            }}
-          >
-            <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>
-              {edit ? 'zmień' : 'dodaj'}
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[commonStyles.button, commonStyles.secondaryButton]}
-            onPress={() => {
-              props.navigation.goBack();
-            }}
-          >
-            <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Anuluj</Text>
-          </Pressable>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -223,8 +240,8 @@ const styles = StyleSheet.create({
 
   },
   innerContainer: {
-    width: '70%',
-    
+    width: '80%',
+
     marginTop: 20,
   },
   imageContainer: {
@@ -259,6 +276,13 @@ const styles = StyleSheet.create({
     columnGap: 10,
     marginVertical: 20,
   },
+  buttonsRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 30,
+    flexWrap: 'wrap',
+  }
 });
 
 export default AlterPage;

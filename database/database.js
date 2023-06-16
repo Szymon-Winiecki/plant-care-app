@@ -5,7 +5,7 @@ import { getFileExtension, generatePlantImageUri, savePlantImage, resetFileSyste
 import { addDays } from "../helpers/dateTimeHelper";
 
 // increment to update db structure and reset data 
-const db_version = 20;
+const db_version = 22;
 
 let db = undefined;
 
