@@ -1,11 +1,11 @@
 import { openDatabase, enablePromise } from "expo-sqlite";
 import * as queries from "./queries";
 import { defaultImageUri, generatePlantImageFileName } from "../constants/plantTemplates";
-import { getFileExtension, generatePlantImageUri, savePlantImage } from "../filesystem/filesystem";
+import { getFileExtension, generatePlantImageUri, savePlantImage, resetFileSystem } from "../filesystem/filesystem";
 import { addDays } from "../helpers/dateTimeHelper";
 
 // increment to update db structure and reset data 
-const db_version = 18;
+const db_version = 20;
 
 let db = undefined;
 
@@ -39,11 +39,10 @@ const execSQL = async (query, args) => {
 
 
 const recreateDB = async () => {
-
+    await resetFileSystem();
     await dropSchema();
     await createSchema();
     await populateData();
-
 }
 
 const init = () => {
@@ -164,8 +163,14 @@ const addPlant = async (plant) => {
     try {
         const result = await execSQL(queries.insertPlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays]);
         const imageUri = generatePlantImageUri(generatePlantImageFileName(result.insertId) + getFileExtension(plant.image));
-        await savePlantImage(plant.image, imageUri);
-        plant.image = imageUri;
+        const saved = await savePlantImage(plant.image, imageUri);
+        if (saved) {
+            plant.image = imageUri;
+        }
+        else {
+            plant.image = defaultImageUri;
+        }
+
         plant.id = result.insertId;
         await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays, plant.id]);
         return result.insertId;
@@ -191,8 +196,13 @@ const removePlant = async (id) => {
 const modifyPlant = async (plant) => {
     try {
         const imageUri = generatePlantImageUri(generatePlantImageFileName(plant.id) + getFileExtension(plant.image));
-        await savePlantImage(plant.image, imageUri);
-        plant.image = imageUri;
+        const saved = await savePlantImage(plant.image, imageUri);
+        if (saved) {
+            plant.image = imageUri;
+        }
+        else {
+            plant.image = defaultImageUri;
+        }
         const result = await execSQL(queries.updatePlant, [plant.name, plant.species, plant.description, plant.image, plant.wateringdays, plant.id]);
         return result;
     }
