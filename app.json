@@ -21,7 +21,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.szymonwiniecki.plantcare"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,9 +35,15 @@
         "expo-image-picker",
         {
           "cameraPermission": "$(PRODUCT_NAME) needs access to your Camera.",
-          "photosPermission":"$(PRODUCT_NAME) needs access to your Photos."
+          "photosPermission": "$(PRODUCT_NAME) needs access to your Photos."
         }
-      ]
-    ]
+      ],
+      "expo-build-properties"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4fb0a4e7-d2ba-4448-8ec0-0973745bd8b8"
+      }
+    }
   }
 }

@@ -23,12 +23,12 @@ const WeatherWidget = props => {
   const [lat, setLat] = useState(52.24);
   const [lon, setLon] = useState(16.56);
   const [days, setDays] = useState(10);
-  const [locationName, setLocationName] = useState('Poznań');
+  const [locationName, setLocationName] = useState('Poznań, Polska');
 
   const [latSettings, setLatSettings] = useState(52.24);
   const [lonSettings, setLonSettings] = useState(16.56);
   const [daysSettings, setDaysSettings] = useState(10);
-  const [locationNameSettings, setLocationNameSettings] = useState('Poznań');
+  const [locationNameSettings, setLocationNameSettings] = useState('Poznań, Polska');
 
   const getWeather = async () => {
     setLoadingWeather(true);
