@@ -6,6 +6,7 @@ import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
 import * as ImagePicker from 'expo-image-picker';
 import { defaultImageUri } from '../constants/plantTemplates';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 const AlterPage = props => {
   // true, jeżeli edytujemy istniejącą roślinę, false jeżeli dodajemmy nową
@@ -64,7 +65,7 @@ const AlterPage = props => {
       species: plantSpecies,
       description: plantDescription,
       image: plantImage,
-      wateringdays: 0,
+      wateringdays: plantWateringDays,
     };
 
     plantsCRUD
@@ -126,6 +127,13 @@ const AlterPage = props => {
       setPlantImage(pickerResult.assets[0].uri);
     }
   };
+  const renderPickerItems = () => {
+    const items = [];
+    for (let i = 0; i <= 30; i++) {
+      items.push(`${i} ${i != 1 ? 'dni' : 'dzień'}`);
+    }
+    return items;
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position" keyboardVerticalOffset={Platform.OS==='android' ? -keyboardHeight/2 : 50}>
@@ -169,6 +177,16 @@ const AlterPage = props => {
               onChangeText={newText => setPlantDescription(newText)}
               value={plantDescription}
             />
+            <View style={styles.propertyContainer}>
+              <Text>podlewanie co:</Text>
+              <ModalDropdown
+                options={renderPickerItems()}
+                defaultValue={`${plantWateringDays} ${plantWateringDays != 1 ? 'dni' : 'dzień'}`}
+                textStyle={styles.pickerText}
+                dropdownStyle={styles.dropDownContainer}
+                onSelect={(id, val) => setPlantWateringDays(parseInt(val.split(" ")[0]))}
+              />
+            </View>
          
           <Pressable
             style={[commonStyles.button, commonStyles.primaryButton]}
@@ -219,6 +237,27 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginTop: 0,
+  },
+  pickerText: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+  },
+  dropDownContainer: {
+    marginTop: 2,
+    width: 200,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+  },
+  propertyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+    marginVertical: 20,
   },
 });
 

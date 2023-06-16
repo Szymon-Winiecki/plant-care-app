@@ -5,7 +5,6 @@ import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import ErrorScreen from '../components/ErrorScreen';
 import LoadingScreen from '../components/LoadingScreen';
-import ModalDropdown from 'react-native-modal-dropdown';
 import PlantProperty from '../components/PlantProperty';
 import { formatTimestamp } from '../helpers/formatHelper';
 
@@ -29,14 +28,6 @@ const DetailsPage = (props) => {
       .catch((error) => setError(true));
   };
 
-  // modify watering days
-  const editPlant = async (value) => {
-    plant.wateringdays = parseInt(value.split(" ")[0]);
-    plantsCRUD
-      .modifyPlant(plant)
-      .then(getPlant())
-      .catch(error => setError(true));
-  };
 
   useEffect(() => {
     getPlant();
@@ -55,17 +46,6 @@ const DetailsPage = (props) => {
     return <ErrorScreen error="Błąd ładowania danych" message="spróbuj ponownie później" />;
   }
 
-  const handlePickerChange = (id, value) => {
-    editPlant(value);
-  };
-
-  const renderPickerItems = () => {
-    const items = [];
-    for (let i = 0; i <= 30; i++) {
-      items.push(`${i} ${i != 1 ? 'dni' : 'dzień'}`);
-    }
-    return items;
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -78,16 +58,7 @@ const DetailsPage = (props) => {
       <ScrollView>
         <PlantProperty label="gatunek" property={plant.species} />
         <PlantProperty label="opis" property={plant.description} />
-        <View style={styles.propertyContainer}>
-          <Text style={commonStyles.label}>podlewanie co:</Text>
-          <ModalDropdown
-            options={renderPickerItems()}
-            defaultValue={`${plant.wateringdays} ${plant.wateringdays != 1 ? 'dni' : 'dzień'}`}
-            textStyle={styles.pickerText}
-            dropdownStyle={styles.dropDownContainer}
-            onSelect={(id, val) => handlePickerChange(id, val)}
-          />
-        </View>
+        <PlantProperty label="Podlewanie co" property={`${plant.wateringdays} ${plant.wateringdays != 1 ? 'dni' : 'dzień'}`} />
         <PlantProperty label="ostatnio podlewany" property={formatTimestamp(plant.last_watering)} />
       </ScrollView>
       <Pressable
@@ -126,21 +97,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
   },
-  pickerText: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-  },
-  dropDownContainer: {
-    marginTop: 2,
-    width: 200,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-  },
+  
 });
 
 export default DetailsPage;
