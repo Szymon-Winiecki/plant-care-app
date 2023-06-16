@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable, Image, TextInput, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable, Image, TextInput, KeyboardAvoidingView, ScrollView, Dimensions, Keyboard } from 'react-native';
 import { plantsCRUD } from '../database/database';
 import { commonStyles } from '../styles/common';
 import ErrorScreen from '../components/ErrorScreen';
@@ -23,6 +23,10 @@ const AlterPage = props => {
   const [plantImage, setPlantImage] = useState(defaultImageUri);
   const [plantWateringDays, setPlantWateringDays] = useState(0);
 
+  const [keyboardHeight, setKeyboardHeight] = useState(50);
+  const windowHeight = Dimensions.get('window').height;
+ 
+ 
   const getPlant = async () => {
     plantsCRUD
       .getPlant(props.route.params.id)
@@ -41,8 +45,12 @@ const AlterPage = props => {
       })
       .catch(error => setError(true));
   };
+  const handleKeyboardShow = (e) => {
+    setKeyboardHeight(e.endCoordinates.height);
+  };
 
   useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
     if (edit) {
       getPlant();
     } else {
@@ -120,83 +128,85 @@ const AlterPage = props => {
   };
 
   return (
-    
-  
-        <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.innerContainer}>
-            <Text style={commonStyles.title}>{edit ? 'Edytuj' : 'Dodaj nową'} roślinę</Text>
-            <View style={[commonStyles.column, styles.fields]}>
-              <View style={styles.imageContainer}>
-                <Image source={{ uri: plantImage }} style={styles.image} />
-                <Pressable
-                  style={[commonStyles.button, commonStyles.secondaryButton]}
-                  onPress={openImagePickerAsync}
-                >
-                  <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Choose Image</Text>
-                </Pressable>
-                <Pressable
-                  style={[commonStyles.button, commonStyles.secondaryButton]}
-                  onPress={openCameraAsync}
-                >
-                  <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Take Photo</Text>
-                </Pressable>
-              </View>
-              <TextInput
-                style={commonStyles.input}
-                placeholder="nazwa rośliny..."
-                onChangeText={newText => setPlantName(newText)}
-                value={plantName}
-              />
-              <TextInput
-                style={commonStyles.input}
-                placeholder="gatunek..."
-                onChangeText={newText => setPlantSpecies(newText)}
-                value={plantSpecies}
-              />
-              <TextInput
-                style={commonStyles.input}
-                placeholder="opis..."
-                onChangeText={newText => setPlantDescription(newText)}
-                value={plantDescription}
-              />
-              <Pressable
-                style={[commonStyles.button, commonStyles.primaryButton]}
-                onPress={() => {
-                  if (edit) editPlant();
-                  else addPlant();
-                }}
-              >
-                <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>
-                  {edit ? 'zmień' : 'dodaj'}
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[commonStyles.button, commonStyles.secondaryButton]}
-                onPress={() => {
-                  props.navigation.goBack();
-                }}
-              >
-                <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Anuluj</Text>
-              </Pressable>
-            </View>
+    <KeyboardAvoidingView style={styles.container} behavior="position" keyboardVerticalOffset={Platform.OS==='android' ? -keyboardHeight/2 : 50}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={commonStyles.title}>{edit ? 'Edytuj' : 'Dodaj nową'} roślinę</Text>
+        <View style={styles.innerContainer}>
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: plantImage }} style={styles.image} />
+            <Pressable
+              style={[commonStyles.button, commonStyles.secondaryButton]}
+              onPress={openImagePickerAsync}
+            >
+              <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Choose Image</Text>
+            </Pressable>
+            <Pressable
+              style={[commonStyles.button, commonStyles.secondaryButton]}
+              onPress={openCameraAsync}
+            >
+              <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Take Photo</Text>
+            </Pressable>
           </View>
-        
-     
-      <StatusBar style="auto" />
+         
+            <TextInput
+              style={commonStyles.input}
+              placeholder="nazwa rośliny..."
+              onChangeText={newText => setPlantName(newText)}
+              value={plantName}
+            />
+          
+            <TextInput
+              style={commonStyles.input}
+              placeholder="gatunek..."
+              onChangeText={newText => setPlantSpecies(newText)}
+              value={plantSpecies}
+            />
+         
+          
+            <TextInput
+              style={commonStyles.input}
+              placeholder="opis..."
+              onChangeText={newText => setPlantDescription(newText)}
+              value={plantDescription}
+            />
+         
+          <Pressable
+            style={[commonStyles.button, commonStyles.primaryButton]}
+            onPress={() => {
+              if (edit) editPlant();
+              else addPlant();
+            }}
+          >
+            <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>
+              {edit ? 'zmień' : 'dodaj'}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[commonStyles.button, commonStyles.secondaryButton]}
+            onPress={() => {
+              props.navigation.goBack();
+            }}
+          >
+            <Text style={[commonStyles.buttonText, commonStyles.secondaryButtonText]}>Anuluj</Text>
+          </Pressable>
+        </View>
       </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: StatusBar.currentHeight || 0,
+  },
+  scrollContainer: {
     flexGrow: 1,
     alignItems: 'center',
-    marginTop: StatusBar.currentHeight || 0,
+
   },
   innerContainer: {
     width: '70%',
-  },
-  fields: {
+    
     marginTop: 20,
   },
   imageContainer: {
@@ -206,6 +216,9 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+  },
+  inputContainer: {
+    marginTop: 0,
   },
 });
 

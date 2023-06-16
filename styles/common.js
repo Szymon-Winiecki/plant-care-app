@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 600,
         color: Colors.textPrimary,
-        marginHorizontal: 35,
+        marginHorizontal: 0,
         marginVertical: 10,
     },
     text: {
