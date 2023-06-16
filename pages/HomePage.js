@@ -1,26 +1,41 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, StatusBar, Pressable, Button } from 'react-native';
-
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Pressable } from 'react-native';
 import { commonStyles } from '../styles/common';
 import WeatherWidget from '../components/weather/WeatherWidget';
-import * as weatherAPI from '../api/weatherAPI';
-import { useEffect, useState } from 'react';
 
-const HomePage = props => {
+const HomePage = ({ navigation }) => {
+
+  useEffect(() => {
+    const onBackPress = () => {
+      return true;
+    };
+    const backHandler = navigation.addListener('beforeRemove', (e) => {
+      if (e.data.action.type === 'GO_BACK' && navigation.isFocused()) {
+        e.preventDefault(); 
+        onBackPress(); 
+      }
+    });
+
+    return () => {
+      // Remove the event listener when the component is unmounted
+      backHandler.remove();
+    };
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
       <WeatherWidget />
       <View style={styles.innerContainer}>
         <Text style={commonStyles.title}>Witaj!</Text>
-        <Text style={styles.description}>plant-care to apliakcja do zarządzania roślinami</Text>
+        <Text style={styles.description}>plant-care to aplikacja do zarządzania roślinami</Text>
         <Pressable
           style={[commonStyles.button, commonStyles.primaryButton]}
-          onPress={() => props.navigation.navigate('Index')}
+          onPress={() => navigation.navigate('Index')}
         >
           <Text style={[commonStyles.buttonText, commonStyles.primaryButtonText]}>lista roślin</Text>
         </Pressable>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 

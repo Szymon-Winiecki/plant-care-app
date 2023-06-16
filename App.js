@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import IndexPage from './pages/IndexPage';
 import AlterPage from './pages/AlterPage';
 import DetailsPage from './pages/DetailsPage';
+import AnimationPage from './pages/AnimationPage';
 import { useEffect } from 'react';
 
 
@@ -24,9 +25,14 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
+          name="Animation"
+          component={AnimationPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Home"
           component={HomePage}
-          options={{ title: 'Strona Główna' }}
+          options={{ title: 'Strona Główna', headerBackVisible: false }}
         />
         <Stack.Screen
           name="Index"
