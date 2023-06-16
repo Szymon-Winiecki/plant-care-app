@@ -42,6 +42,14 @@ const generatePlantImageUri = (filename) => {
     return documentDirectory + plantsImagesDirectory + filename;
 }
 
+const deleteFile = async (uri) => {
+    try {
+        await deleteAsync(uri);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const savePlantImage = async (from, to) => {
     if (from == to) {
         return true;
@@ -74,4 +82,4 @@ const savePlantImage = async (from, to) => {
     return true;
 }
 
-export { initFileSystem, resetFileSystem, generatePlantImageUri, savePlantImage, getFileExtension };
+export { initFileSystem, resetFileSystem, generatePlantImageUri, savePlantImage, getFileExtension, deleteFile };

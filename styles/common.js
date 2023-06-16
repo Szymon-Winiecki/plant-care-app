@@ -25,11 +25,18 @@ const styles = StyleSheet.create({
         color: Colors.textPrimary,
     },
     button: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
+        paddingHorizontal: 26,
+        paddingVertical: 12,
         margin: 6,
         borderRadius: 4,
         textAlign: 'center',
+    },
+    flexButton: {
+        margin: 6,
+        borderRadius: 4,
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     buttonText: {
         textAlign: 'center',
@@ -45,6 +52,16 @@ const styles = StyleSheet.create({
     },
     secondaryButtonText: {
         color: Colors.textAlt,
+    },
+    redButton: {
+        backgroundColor: Colors.error,
+    },
+    redButtonText: {
+        color: Colors.textAlt,
+    },
+    buttonIcon: {
+        width: 20,
+        height: 20,
     },
     iconButton: {
         padding: 5,

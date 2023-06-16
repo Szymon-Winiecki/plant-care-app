@@ -1,7 +1,7 @@
 import { openDatabase, enablePromise } from "expo-sqlite";
 import * as queries from "./queries";
 import { defaultImageUri, generatePlantImageFileName } from "../constants/plantTemplates";
-import { getFileExtension, generatePlantImageUri, savePlantImage, resetFileSystem } from "../filesystem/filesystem";
+import { getFileExtension, generatePlantImageUri, savePlantImage, resetFileSystem, deleteFile } from "../filesystem/filesystem";
 import { addDays } from "../helpers/dateTimeHelper";
 
 // increment to update db structure and reset data 
@@ -183,8 +183,9 @@ const addPlant = async (plant) => {
 
 const removePlant = async (id) => {
     try {
+        const plant = await execSQL(queries.selectPlant, [id]);
+        await deleteFile(plant.rows._array[0].image);
         const result = await execSQL(queries.deletePlant, [id]);
-        console.log(result);
         return result;
     }
     catch (error) {
