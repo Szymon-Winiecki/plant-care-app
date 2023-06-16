@@ -5,7 +5,7 @@ import { getFileExtension, generatePlantImageUri, savePlantImage, resetFileSyste
 import { addDays } from "../helpers/dateTimeHelper";
 
 // increment to update db structure and reset data 
-const db_version = 22;
+const db_version = 24;
 
 let db = undefined;
 
@@ -95,14 +95,14 @@ let plants = [
         species: 'Aporocactus Mallisonii',
         description: 'Uwaga, kłujący!',
         image: defaultImageUri,
-        wateringdays: 1
+        wateringdays: 10
     },
     {
         name: 'Mięta w kuchni',
         species: 'Mięta pieprzowa',
         description: 'pięknie pachnie',
         image: defaultImageUri,
-        wateringdays: 10
+        wateringdays: 1
     },
     {
         name: 'Rozmaryn na balkonie',
@@ -113,10 +113,17 @@ let plants = [
     },
     {
         name: 'Łany burzanu',
-        species: 'Mięta pieprzowa',
-        description: 'podlewać raz dziennie',
+        species: 'Pellentesque ultricies',
+        description: 'Sed at erat quam. Integer diam orci.',
         image: defaultImageUri,
-        wateringdays: 4
+        wateringdays: 5
+    },
+    {
+        name: 'Bratki w ogródku',
+        species: 'Lorem ipsum',
+        description: 'Proin aliquet condimentum massa, semper ultricies nulla ullamcorper efficitur',
+        image: defaultImageUri,
+        wateringdays: 2
     },
 ]
 
@@ -130,10 +137,11 @@ const populateData = async () => {
     }
 
     const now = Date.now();
-    await waterPlant(1, now);
-    await waterPlant(2, addDays(now, -10));
+    await waterPlant(1, addDays(now, -2));
+    await waterPlant(2, addDays(now, -1));
     await waterPlant(3, addDays(now, -4));
     await waterPlant(4, addDays(now, -10));
+    await waterPlant(5, addDays(now, -1));
 }
 
 const getPlants = async () => {
